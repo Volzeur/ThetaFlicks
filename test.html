@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lazy Loader</title>
+</head>
+<body>
+  <div id="content" style="text-align:center; margin-top:50px; font-size:24px; cursor:pointer; color:blue;">
+    Click here to load
+  </div>
+
+  <script>
+    document.getElementById("content").addEventListener("click", function() {
+      fetch("sports.html")
+        .then(response => response.text())
+        .then(html => {
+          document.open();          // Open the document stream
+          document.write(html);     // Replace the current HTML with the new content
+          document.close();         // Close the stream to render it
+        })
+        .catch(err => {
+          alert("Failed to load sports.html: " + err);
+        });
+    });
+  </script>
+</body>
+</html>
