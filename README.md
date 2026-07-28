@@ -6,7 +6,7 @@
 
 ThetaFlicks is a A free to use app to stream movies, series, and sports.
 
-**Download**: [thetaflicks.web.app](https://thetaflicks.web.app)
+[![Download App](https://img.shields.io/badge/Download-ThetaFlicks-0078D4?style=flat-square)](https://thetaflicks.web.app)
 
 ---
 
