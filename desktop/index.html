@@ -695,6 +695,10 @@ document.querySelectorAll('.nav-tab').forEach(btn => {
         if (tab === 'movies' && !document.getElementById('trending-grid-movies').children.length) fetchTabGrid('movie', 'movies', 1);
         if (tab === 'series' && !document.getElementById('trending-grid-series').children.length) fetchTabGrid('tv', 'series', 1);
         if (tab === 'apps') buildApps();
+        if (tab === 'sports') {
+            const iframe = document.getElementById('sports-iframe');
+            if (iframe && iframe.src === 'about:blank') iframe.src = '/sports.html';
+        }
     });
 });
 
