@@ -697,7 +697,7 @@ document.querySelectorAll('.nav-tab').forEach(btn => {
         if (tab === 'apps') buildApps();
         if (tab === 'sports') {
             const iframe = document.getElementById('sports-iframe');
-            if (iframe && iframe.src === 'about:blank') iframe.src = 'sports.html';
+            if (iframe && iframe.src === 'about:blank') iframe.src = '/desktop/sports.html';
         }
     });
 });
