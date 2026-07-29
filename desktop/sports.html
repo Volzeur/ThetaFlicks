@@ -1,505 +1,391 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThetaFlicks Sports</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        :root {
-            --bg-base: #0f1218;
-            --bg-card: #1a1e2a;
-            --accent: #285761;
-            --accent-2: #39cccc;
-            --text-primary: #D7D7D7;
-            --text-muted: #39cccc;
-            --border: rgba(79, 195, 247, 0.12);
-            --header-h: 70px;
-            --radius: 12px;
-        }
+<!-- THETAFLICKS WIDGET START -->
+<style>
+    /* SCOPED STYLES - Only affects #theta-sports-widget */
+    #theta-sports-widget {
+        --ts-bg-base: #0f1218;
+        --ts-bg-card: #1a1e2a;
+        --ts-accent: #285761;
+        --ts-accent-2: #39cccc;
+        --ts-text: #D7D7D7;
+        --ts-muted: #39cccc;
+        --ts-border: rgba(79, 195, 247, 0.12);
+        --ts-radius: 12px;
+        
+        font-family: 'Lexend', sans-serif;
+        background: var(--ts-bg-base);
+        color: var(--ts-text);
+        width: 100%;
+        max-width: 100%;
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--ts-radius);
+        border: 1px solid var(--ts-border);
+        box-sizing: border-box;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Reset internal elements */
+    #theta-sports-widget * { box-sizing: border-box; }
+    
+    /* Internal Background Gradient */
+    #theta-sports-widget::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(79,195,247,0.07) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
 
-        body {
-            background: var(--bg-base);
-            color: var(--text-primary);
-            font-family: 'Lexend', sans-serif;
-            overflow-x: hidden;
-        }
+    /* Widget Header (Static, not fixed) */
+    .ts-header {
+        position: relative;
+        z-index: 10;
+        padding: 16px;
+        border-bottom: 1px solid var(--ts-border);
+        background: rgba(15, 18, 24, 0.6);
+    }
 
-        /* Preserved Radial Gradient */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(79,195,247,0.07) 0%, transparent 70%),
-                        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(79,195,247,0.05) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
+    .ts-search-wrap {
+        width: 100%;
+        position: relative;
+    }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+    .ts-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--ts-muted);
+        font-size: 0.85rem;
+        pointer-events: none;
+    }
 
-        /* HEADER */
-        header {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: var(--header-h);
-            background: rgba(15, 18, 24, 0.9);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            padding: 0 24px;
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
-        }
+    #ts-search-input {
+        width: 100%;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--ts-border);
+        border-radius: 50px;
+        color: var(--ts-text);
+        font-family: inherit;
+        font-size: 0.9rem;
+        padding: 10px 20px 10px 40px;
+        outline: none;
+    }
+    #ts-search-input:focus { border-color: var(--ts-accent-2); }
 
-        .search-wrap {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            position: relative;
-        }
+    /* Controls */
+    .ts-controls {
+        display: flex;
+        gap: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        position: relative;
+        z-index: 10;
+        scrollbar-width: none;
+    }
+    .ts-controls::-webkit-scrollbar { display: none; }
 
-        .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            pointer-events: none;
-        }
+    .ts-btn {
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid var(--ts-border);
+        background: transparent;
+        color: var(--ts-text);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+    .ts-btn:hover { border-color: var(--ts-accent-2); color: var(--ts-accent-2); }
+    .ts-btn.active { background: var(--ts-accent); color: #fff; border-color: var(--ts-accent); }
 
-        #searchFunc {
-            width: 100%;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 0.9rem;
-            padding: 10px 20px 10px 40px;
-            outline: none;
-            transition: border-color 0.2s, background 0.2s;
-        }
-        #searchFunc:focus {
-            border-color: var(--accent-2);
-            background: rgba(57, 204, 204, 0.05);
-        }
-        #searchFunc::placeholder { color: rgba(215, 215, 215, 0.4); }
+    /* Grid */
+    .ts-container {
+        padding: 0 16px 16px;
+        position: relative;
+        z-index: 10;
+    }
 
-        /* MAIN */
-        .container {
-            padding: calc(var(--header-h) + 24px) 24px 40px;
-            position: relative;
-            z-index: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    .ts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+    }
 
-        /* CONTROLS */
-        .controls {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            scrollbar-width: none; /* Firefox */
-        }
-        .controls::-webkit-scrollbar { display: none; }
+    /* Card */
+    .ts-card {
+        background: var(--ts-bg-card);
+        border: 1px solid var(--ts-border);
+        border-radius: var(--ts-radius);
+        overflow: hidden;
+        transition: border-color 0.2s;
+    }
+    .ts-card:hover { border-color: rgba(57, 204, 204, 0.3); }
 
-        .sport-btn {
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-            white-space: nowrap;
-        }
-        .sport-btn:hover { border-color: var(--accent-2); color: var(--accent-2); }
-        .sport-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .ts-thumb {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #151922;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .ts-thumb img {
+        width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;
+    }
+    .ts-fallback {
+        flex-direction: column; gap: 8px; color: var(--ts-muted); text-align: center; padding: 16px;
+    }
+    .ts-fallback i { font-size: 2rem; margin-bottom: 4px; }
+    .ts-fallback span { font-size: 0.85rem; font-weight: 600; color: var(--ts-text); }
 
-        /* GRID & CARDS */
-        .matches-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-        }
+    .ts-live {
+        position: absolute; top: 8px; left: 8px;
+        background: #ef5350; color: #fff;
+        font-size: 0.65rem; font-weight: 700;
+        padding: 3px 8px; border-radius: 4px;
+        z-index: 2; display: flex; align-items: center; gap: 5px;
+    }
+    .ts-live::before {
+        content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%;
+        animation: ts-pulse 1.2s infinite;
+    }
+    @keyframes ts-pulse { 50% { opacity: 0.4; } }
 
-        .match-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            transition: border-color 0.2s, background 0.2s;
-        }
-        .match-card:hover {
-            border-color: rgba(57, 204, 204, 0.3);
-            background: #1e2330;
-        }
+    .ts-content { padding: 14px; }
+    .ts-time { font-size: 0.75rem; color: var(--ts-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .ts-teams { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 14px; line-height: 1.3; }
+    
+    .ts-streams { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ts-stream-btn {
+        display: flex; align-items: center; gap: 6px;
+        background: var(--ts-accent); color: #fff;
+        border: none; border-radius: 6px;
+        font-size: 0.75rem; font-weight: 600;
+        padding: 6px 12px; cursor: pointer;
+    }
+    .ts-stream-btn:hover { background: var(--ts-accent-2); color: var(--ts-bg-base); }
 
-        .match-thumb {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #151922;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    /* States */
+    .ts-loading, .ts-empty {
+        grid-column: 1 / -1; text-align: center; padding: 40px 20px;
+        color: rgba(215, 215, 215, 0.4); font-size: 0.9rem;
+    }
+    .ts-spinner {
+        width: 2rem; height: 2rem;
+        border: 3px solid rgba(79,195,247,0.15);
+        border-top-color: var(--ts-accent-2);
+        border-radius: 50%;
+        animation: ts-spin 0.8s linear infinite;
+        margin: 0 auto 12px;
+    }
+    @keyframes ts-spin { to { transform: rotate(360deg); } }
 
-        .match-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            inset: 0;
-        }
+    /* Modal (Scoped to widget but fixed to viewport) */
+    #ts-modal {
+        display: none;
+        position: fixed; inset: 0; z-index: 9999;
+        align-items: center; justify-content: center; padding: 20px;
+    }
+    #ts-modal.active { display: flex; }
+    .ts-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); }
+    .ts-modal-box {
+        position: relative; z-index: 1;
+        background: var(--ts-bg-card);
+        border: 1px solid var(--ts-border);
+        border-radius: var(--ts-radius);
+        width: 100%; max-width: 900px;
+        overflow: hidden;
+    }
+    .ts-modal-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 16px; border-bottom: 1px solid var(--ts-border);
+    }
+    .ts-modal-title { font-size: 0.9rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 12px; }
+    .ts-modal-close {
+        width: 28px; height: 28px; background: rgba(255,255,255,0.05);
+        border: none; border-radius: 6px; color: var(--ts-text);
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .ts-modal-close:hover { background: rgba(255,255,255,0.15); }
+    #ts-stream-container { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
+    .ts-player { width: 100%; height: 100%; border: none; }
+</style>
 
-        .thumb-fallback {
-            flex-direction: column;
-            gap: 8px;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 16px;
-        }
-        .thumb-fallback i { font-size: 2rem; margin-bottom: 4px; }
-        .thumb-fallback span { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
-
-        .live-badge {
-            position: absolute;
-            top: 8px; left: 8px;
-            background: #ef5350;
-            color: #fff;
-            font-size: 0.65rem;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 4px;
-            letter-spacing: 0.5px;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .live-badge::before {
-            content: '';
-            width: 5px; height: 5px;
-            background: #fff;
-            border-radius: 50%;
-            animation: pulse 1.2s infinite;
-        }
-        @keyframes pulse { 50% { opacity: 0.4; } }
-
-        .match-content { padding: 14px; }
-
-        .match-time {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .match-teams {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 14px;
-            line-height: 1.3;
-        }
-
-        .streams { display: flex; gap: 8px; flex-wrap: wrap; }
-
-        .stream-link {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 6px 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .stream-link:hover { background: var(--accent-2); color: var(--bg-base); }
-
-        /* STATES */
-        .loading, .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            color: rgba(215, 215, 215, 0.4);
-            font-size: 0.9rem;
-        }
-        .spinner {
-            width: 2rem; height: 2rem;
-            border: 3px solid rgba(79,195,247,0.15);
-            border-top-color: var(--accent-2);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .modal.active { display: flex; }
-
-        .modal-backdrop {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(4px);
-        }
-
-        .modal-box {
-            position: relative;
-            z-index: 1;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            width: 100%;
-            max-width: 900px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-        }
-        .modal-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-right: 12px;
-        }
-        .modal-close {
-            width: 28px; height: 28px;
-            background: rgba(255,255,255,0.05);
-            border: none;
-            border-radius: 6px;
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: background 0.2s;
-        }
-        .modal-close:hover { background: rgba(255,255,255,0.15); }
-
-        #streamContainer {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #000;
-        }
-        .stream-player { width: 100%; height: 100%; border: none; }
-
-        @media (max-width: 600px) {
-            .container { padding: calc(var(--header-h) + 16px) 16px 24px; }
-            .matches-grid { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <div class="search-wrap">
-        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input type="text" id="searchFunc" placeholder="Search teams or matches…" autocomplete="off">
-    </div>
-</header>
-
-<main class="container">
-    <div class="controls" id="controls"></div>
-    <div id="loading" class="loading" style="display: none;">
-        <div class="spinner"></div>
-        <p>Loading matches…</p>
-    </div>
-    <div id="matches-container" class="matches-grid"></div>
-</main>
-
-<div id="streamModal" class="modal">
-    <div class="modal-backdrop" onclick="closeStream()"></div>
-    <div class="modal-box">
-        <div class="modal-header">
-            <span class="modal-title" id="modalTitle">Stream</span>
-            <button class="modal-close" onclick="closeStream()"><i class="fa-solid fa-xmark"></i></button>
+<div id="theta-sports-widget">
+    <div class="ts-header">
+        <div class="ts-search-wrap">
+            <i class="fa-solid fa-magnifying-glass ts-search-icon"></i>
+            <input type="text" id="ts-search-input" placeholder="Search teams…" autocomplete="off">
         </div>
-        <div id="streamContainer"></div>
+    </div>
+
+    <div class="ts-controls" id="ts-controls"></div>
+
+    <div class="ts-container">
+        <div id="ts-loading" class="ts-loading" style="display: none;">
+            <div class="ts-spinner"></div>
+            <p>Loading matches…</p>
+        </div>
+        <div id="ts-matches" class="ts-grid"></div>
+    </div>
+</div>
+
+<div id="ts-modal">
+    <div class="ts-modal-backdrop" onclick="tsCloseStream()"></div>
+    <div class="ts-modal-box">
+        <div class="ts-modal-header">
+            <span class="ts-modal-title" id="ts-modal-title">Stream</span>
+            <button class="ts-modal-close" onclick="tsCloseStream()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="ts-stream-container"></div>
     </div>
 </div>
 
 <script>
-    const API_BASE = 'https://streamed.st/api';
-    let currentSport = 'football';
-    let allMatches = [];
+    (function() {
+        const API_BASE = 'https://streamed.st/api';
+        let currentSport = 'football';
+        let allMatches = [];
 
-    const sportIcons = {
-        football: 'fa-solid fa-futbol', basketball: 'fa-solid fa-basketball',
-        'american-football': 'fa-solid fa-football', hockey: 'fa-solid fa-hockey-puck',
-        baseball: 'fa-solid fa-baseball', 'motor-sports': 'fa-solid fa-flag-checkered',
-        fight: 'fa-solid fa-hand-fist', tennis: 'fa-solid fa-table-tennis-paddle-ball',
-        rugby: 'fa-solid fa-football', golf: 'fa-solid fa-golf-ball-tee',
-        billiards: 'fa-solid fa-bowling-ball', afl: 'fa-solid fa-football',
-        darts: 'fa-solid fa-bullseye', cricket: 'fa-solid fa-baseball-bat-ball',
-        other: 'fa-solid fa-trophy'
-    };
+        const sportIcons = {
+            football: 'fa-solid fa-futbol', basketball: 'fa-solid fa-basketball',
+            'american-football': 'fa-solid fa-football', hockey: 'fa-solid fa-hockey-puck',
+            baseball: 'fa-solid fa-baseball', 'motor-sports': 'fa-solid fa-flag-checkered',
+            fight: 'fa-solid fa-hand-fist', tennis: 'fa-solid fa-table-tennis-paddle-ball',
+            rugby: 'fa-solid fa-football', golf: 'fa-solid fa-golf-ball-tee',
+            billiards: 'fa-solid fa-bowling-ball', afl: 'fa-solid fa-football',
+            darts: 'fa-solid fa-bullseye', cricket: 'fa-solid fa-baseball-bat-ball',
+            other: 'fa-solid fa-trophy'
+        };
 
-    const sportsList = Object.keys(sportIcons);
-    const controlsEl = document.getElementById('controls');
-    const matchesContainer = document.getElementById('matches-container');
-    const loadingEl = document.getElementById('loading');
-    const searchFunc = document.getElementById('searchFunc');
-    const streamModal = document.getElementById('streamModal');
-    const streamContainer = document.getElementById('streamContainer');
-    const modalTitle = document.getElementById('modalTitle');
+        const sportsList = Object.keys(sportIcons);
+        const controlsEl = document.getElementById('ts-controls');
+        const matchesContainer = document.getElementById('ts-matches');
+        const loadingEl = document.getElementById('ts-loading');
+        const searchFunc = document.getElementById('ts-search-input');
+        const streamModal = document.getElementById('ts-modal');
+        const streamContainer = document.getElementById('ts-stream-container');
+        const modalTitle = document.getElementById('ts-modal-title');
 
-    // Generate sport buttons dynamically to reduce HTML bloat
-    sportsList.forEach(sport => {
-        const btn = document.createElement('button');
-        btn.className = `sport-btn ${sport === currentSport ? 'active' : ''}`;
-        btn.dataset.sport = sport;
-        btn.textContent = sport.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.sport-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentSport = sport;
-            loadMatches(currentSport);
-        });
-        controlsEl.appendChild(btn);
-    });
-
-    searchFunc.addEventListener('input', renderMatches);
-
-    function closeStream() {
-        streamModal.classList.remove('active');
-        streamContainer.innerHTML = '';
-    }
-
-    function renderMatches() {
-        const term = searchFunc.value.toLowerCase();
-        const filtered = allMatches.filter(m => {
-            const home = m.teams?.home?.name || '';
-            const away = m.teams?.away?.name || '';
-            if (home === 'TBA' || away === 'TBA' || !home || !away) return false;
-            return !term || `${home} ${away} ${m.title || ''}`.toLowerCase().includes(term);
+        // Generate buttons
+        sportsList.forEach(sport => {
+            const btn = document.createElement('button');
+            btn.className = `ts-btn ${sport === currentSport ? 'active' : ''}`;
+            btn.dataset.sport = sport;
+            btn.textContent = sport.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.ts-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSport = sport;
+                tsLoadMatches(currentSport);
+            });
+            controlsEl.appendChild(btn);
         });
 
-        if (filtered.length === 0) {
-            matchesContainer.innerHTML = `<div class="empty-state"><p>${term ? 'No matches found' : 'No confirmed matches available'}</p></div>`;
-            return;
+        searchFunc.addEventListener('input', tsRenderMatches);
+
+        window.tsCloseStream = function() {
+            streamModal.classList.remove('active');
+            streamContainer.innerHTML = '';
         }
 
-        matchesContainer.innerHTML = filtered.map(match => {
-            const time = match.date ? new Date(match.date).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Time TBA';
-            const home = match.teams?.home?.name || 'TBA';
-            const away = match.teams?.away?.name || 'TBA';
-            const isLive = match.date && Date.now() >= new Date(match.date).getTime() && Date.now() <= new Date(match.date).getTime() + 3 * 60 * 60 * 1000;
-            const hasPoster = !!match.poster;
-            const posterUrl = hasPoster ? `https://streamed.st${match.poster}` : '';
-            const icon = sportIcons[currentSport] || 'fa-solid fa-trophy';
+        function tsRenderMatches() {
+            const term = searchFunc.value.toLowerCase();
+            const filtered = allMatches.filter(m => {
+                const home = m.teams?.home?.name || '';
+                const away = m.teams?.away?.name || '';
+                if (home === 'TBA' || away === 'TBA' || !home || !away) return false;
+                return !term || `${home} ${away} ${m.title || ''}`.toLowerCase().includes(term);
+            });
 
-            let streamsHTML = '<span style="font-size:0.75rem; color:rgba(255,255,255,0.3);">No streams</span>';
-            if (match.sources?.length) {
-                streamsHTML = '<div class="streams">' + 
-                    match.sources.slice(0, 3).map((src, i) => 
-                        `<button class="stream-link" onclick="openStream(event, '${home} vs ${away}', '${src.source || 'Source'}', '${src.id || ''}')">
-                            <i class="fa-solid fa-play" style="font-size:0.6rem;"></i> Server ${i + 1}
-                        </button>`
-                    ).join('') + '</div>';
+            if (filtered.length === 0) {
+                matchesContainer.innerHTML = `<div class="ts-empty"><p>${term ? 'No matches found' : 'No confirmed matches'}</p></div>`;
+                return;
             }
 
-            return `
-                <div class="match-card">
-                    <div class="match-thumb">
-                        ${isLive ? '<span class="live-badge">LIVE</span>' : ''}
-                        ${hasPoster ? `<img src="${posterUrl}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" alt="Poster">` : ''}
-                        <div class="thumb-fallback" style="display: ${hasPoster ? 'none' : 'flex'}">
-                            <i class="${icon}"></i>
-                            <span>${home} vs ${away}</span>
+            matchesContainer.innerHTML = filtered.map(match => {
+                const time = match.date ? new Date(match.date).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Time TBA';
+                const home = match.teams?.home?.name || 'TBA';
+                const away = match.teams?.away?.name || 'TBA';
+                const isLive = match.date && Date.now() >= new Date(match.date).getTime() && Date.now() <= new Date(match.date).getTime() + 3 * 60 * 60 * 1000;
+                const hasPoster = !!match.poster;
+                const posterUrl = hasPoster ? `https://streamed.st${match.poster}` : '';
+                const icon = sportIcons[currentSport] || 'fa-solid fa-trophy';
+
+                let streamsHTML = '<span style="font-size:0.75rem; color:rgba(255,255,255,0.3);">No streams</span>';
+                if (match.sources?.length) {
+                    streamsHTML = '<div class="ts-streams">' + 
+                        match.sources.slice(0, 3).map((src, i) => 
+                            `<button class="ts-stream-btn" onclick="tsOpenStream(event, '${home} vs ${away}', '${src.source || 'Source'}', '${src.id || ''}')">
+                                <i class="fa-solid fa-play" style="font-size:0.6rem;"></i> Server ${i + 1}
+                            </button>`
+                        ).join('') + '</div>';
+                }
+
+                return `
+                    <div class="ts-card">
+                        <div class="ts-thumb">
+                            ${isLive ? '<span class="ts-live">LIVE</span>' : ''}
+                            ${hasPoster ? `<img src="${posterUrl}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" alt="Poster">` : ''}
+                            <div class="ts-fallback" style="display: ${hasPoster ? 'none' : 'flex'}">
+                                <i class="${icon}"></i>
+                                <span>${home} vs ${away}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="match-content">
-                        <div class="match-time"><i class="fa-regular fa-clock"></i> ${time}</div>
-                        <div class="match-teams">${home} <span style="color:var(--accent-2); font-size:0.8rem;">vs</span> ${away}</div>
-                        ${streamsHTML}
-                    </div>
-                </div>`;
-        }).join('');
-    }
-
-    async function loadMatches(sport) {
-        matchesContainer.innerHTML = '';
-        loadingEl.style.display = 'block';
-        searchFunc.value = '';
-        try {
-            const res = await fetch(`${API_BASE}/matches/${sport}`);
-            if (!res.ok) throw new Error(res.status);
-            allMatches = await res.json() || [];
-            loadingEl.style.display = 'none';
-            renderMatches();
-        } catch (err) {
-            console.error('Error:', err);
-            loadingEl.style.display = 'none';
-            matchesContainer.innerHTML = '<div class="empty-state"><p>Failed to load matches. Please try again later.</p></div>';
+                        <div class="ts-content">
+                            <div class="ts-time"><i class="fa-regular fa-clock"></i> ${time}</div>
+                            <div class="ts-teams">${home} <span style="color:var(--ts-accent-2); font-size:0.8rem;">vs</span> ${away}</div>
+                            ${streamsHTML}
+                        </div>
+                    </div>`;
+            }).join('');
         }
-    }
 
-    async function openStream(e, title, source, sourceId) {
-        e.preventDefault();
-        streamModal.classList.add('active');
-        modalTitle.textContent = `${title} — ${source}`;
-        streamContainer.innerHTML = '<div class="loading" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;"><div class="spinner"></div><p>Loading stream…</p></div>';
-
-        try {
-            const res = await fetch(`${API_BASE}/stream/${source}/${sourceId}`);
-            if (!res.ok) throw new Error(res.status);
-            const data = await res.json();
-            
-            // Simplified extraction: check only the most common valid keys
-            const item = Array.isArray(data) ? data[0] : data;
-            const embedUrl = item?.embedUrl || item?.url;
-
-            if (embedUrl) {
-                streamContainer.innerHTML = `<iframe class="stream-player" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
-            } else {
-                streamContainer.innerHTML = '<div class="empty-state"><p>Unable to load stream. Try another server.</p></div>';
+        async function tsLoadMatches(sport) {
+            matchesContainer.innerHTML = '';
+            loadingEl.style.display = 'block';
+            searchFunc.value = '';
+            try {
+                const res = await fetch(`${API_BASE}/matches/${sport}`);
+                if (!res.ok) throw new Error(res.status);
+                allMatches = await res.json() || [];
+                loadingEl.style.display = 'none';
+                tsRenderMatches();
+            } catch (err) {
+                console.error('Error:', err);
+                loadingEl.style.display = 'none';
+                matchesContainer.innerHTML = '<div class="ts-empty"><p>Failed to load matches.</p></div>';
             }
-        } catch (err) {
-            streamContainer.innerHTML = `<div class="empty-state"><p>Stream failed to load</p><p style="font-size:0.8rem; margin-top:8px; opacity:0.5;">${err.message}</p></div>`;
         }
-    }
 
-    // Initialize
-    loadMatches(currentSport);
+        window.tsOpenStream = async function(e, title, source, sourceId) {
+            e.preventDefault();
+            streamModal.classList.add('active');
+            modalTitle.textContent = `${title} — ${source}`;
+            streamContainer.innerHTML = '<div class="ts-loading" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;"><div class="ts-spinner"></div><p>Loading stream…</p></div>';
+
+            try {
+                const res = await fetch(`${API_BASE}/stream/${source}/${sourceId}`);
+                if (!res.ok) throw new Error(res.status);
+                const data = await res.json();
+                
+                const item = Array.isArray(data) ? data[0] : data;
+                const embedUrl = item?.embedUrl || item?.url;
+
+                if (embedUrl) {
+                    streamContainer.innerHTML = `<iframe class="ts-player" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+                } else {
+                    streamContainer.innerHTML = '<div class="ts-empty"><p>Unable to load stream.</p></div>';
+                }
+            } catch (err) {
+                streamContainer.innerHTML = `<div class="ts-empty"><p>Stream failed to load</p></div>`;
+            }
+        }
+
+        // Init
+        tsLoadMatches(currentSport);
+    })();
 </script>
-</body>
-</html>
